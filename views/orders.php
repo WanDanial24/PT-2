@@ -17,7 +17,7 @@ ob_start();
             <div class="col">
                 <h5 class="mb-0">
                     <i class="bi bi-pencil-square text-primary me-2"></i>
-                    Order Form
+                    Order Forms
                 </h5>
                 <small class="text-muted">Fill in the details of an order</small>
             </div>
@@ -28,7 +28,7 @@ ob_start();
  
         <hr>
  
-        <form action="" method="post" class="needs-validation" novalidate>
+        <form action="<?= BASE_URL ?>ordercontroller/<?= isset($aorder) ? 'update' : 'save' ?>" method="post" class="needs-validation" novalidate>
             <div class="row g-3">
                 <div class="col-md-4">
                     <label for="order_num" class="form-label">Order ID <span class="text-danger" aria-hidden="true">*</span></label>
