@@ -17,7 +17,7 @@ ob_start();
             <div class="col">
                 <h5 class="mb-0">
                     <i class="bi bi-pencil-square text-primary me-2"></i>
-                    Order Forms
+                    Order Form
                 </h5>
                 <small class="text-muted">Fill in the details of an order</small>
             </div>
