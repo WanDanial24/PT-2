@@ -1,23 +1,25 @@
+
 <?php
 $orderDate = $aorder['fld_order_date'] ?? date('Y-m-d');
 ob_start();
 ?>
- 
+
 <div class="card shadow border-0 border-start border-5 border-primary mb-4">
     <div class="card-body">
         <h2 class="mb-1">Orders</h2>
         <p class="text-muted mb-0">Manage and track all your orders</p>
     </div>
 </div>
- 
+
 <div class="card shadow-sm mb-4">
     <div class="card-body">
+
         <!-- Form Header -->
         <div class="row g-0 align-items-center mb-3">
             <div class="col">
                 <h5 class="mb-0">
                     <i class="bi bi-pencil-square text-primary me-2"></i>
-                    Order Form
+                    <?php echo isset($aorder) ? 'Edit Order' : 'Order Form'; ?>
                 </h5>
                 <small class="text-muted">Fill in the details of an order</small>
             </div>
@@ -25,48 +27,87 @@ ob_start();
                 <span class="badge bg-primary">* Required fields</span>
             </div>
         </div>
- 
+
         <hr>
- 
+
         <form action="<?= BASE_URL ?>ordercontroller/<?= isset($aorder) ? 'update' : 'save' ?>" method="post" class="needs-validation" novalidate>
+
             <div class="row g-3">
+
+                <!-- Order Date -->
                 <div class="col-md-4">
-                    <label for="order_num" class="form-label">Order ID <span class="text-danger" aria-hidden="true">*</span></label>
-                    <input name="order_num" id="order_num" type="text" class="form-control" placeholder="Enter Order ID" value="" required>
+                    <label for="order_date" class="form-label">
+                        Order Date <span class="text-danger" aria-hidden="true">*</span>
+                    </label>
+                    <input name="order_date" id="order_date" type="date"
+                        class="form-control"
+                        value="<?= htmlspecialchars($orderDate) ?>" required>
                 </div>
+
+                <!-- Staff -->
                 <div class="col-md-4">
-                    <label for="staff_num" class="form-label">Staff <span class="text-danger" aria-hidden="true">*</span></label>
-                    <select name="staff_num" id="staff_num" class="form-control" required>
+                    <label for="staff_num" class="form-label">
+                        Staff <span class="text-danger" aria-hidden="true">*</span>
+                    </label>
+                    <select name="staff_num" id="staff_num" class="form-select" required>
                         <option value="">Select Staff</option>
-                        <option value="S001">Jane Smith</option>
+
+                        <?php foreach ($staffs ?? [] as $staff): ?>
+                            <option value="<?= htmlspecialchars($staff['fld_staff_num']) ?>"
+                                <?= (($aorder['fld_staff_num'] ?? '') == $staff['fld_staff_num']) ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($staff['fld_staff_num'] . ' - ' . $staff['fld_staff_name']) ?>
+                            </option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
+
+                <!-- Customer -->
                 <div class="col-md-4">
-                    <label for="customer_num" class="form-label">Customer <span class="text-danger" aria-hidden="true">*</span></label>
-                    <select name="customer_num" id="customer_num" class="form-control" required>
+                    <label for="customer_num" class="form-label">
+                        Customer <span class="text-danger" aria-hidden="true">*</span>
+                    </label>
+                    <select name="customer_num" id="customer_num" class="form-select" required>
                         <option value="">Select Customer</option>
-                        <option value="C001">Alice Johnson</option>
+
+                        <?php foreach ($customers ?? [] as $customer): ?>
+                            <option value="<?= htmlspecialchars($customer['fld_customer_num']) ?>"
+                                <?= (($aorder['fld_customer_num'] ?? '') == $customer['fld_customer_num']) ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($customer['fld_customer_num'] . ' - ' . $customer['fld_customer_name']) ?>
+                            </option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
+
             </div>
-             
+
             <hr class="mt-4 mb-3">
-             
+
             <div>
-                <button type="submit" name="create" class="btn btn-primary">
-                    <i class="bi bi-save me-1"></i>Create
+                <button type="submit"
+                    name="<?= isset($aorder) ? 'update' : 'create' ?>"
+                    class="btn btn-primary">
+                    <i class="bi bi-save me-1"></i><?= isset($aorder) ? 'Update' : 'Create' ?>
                 </button>
+
                 <button type="reset" class="btn btn-secondary">
                     <i class="bi bi-arrow-counterclockwise me-1"></i>Clear
                 </button>
             </div>
+
+            <!-- Hidden Order ID for Editing -->
+            <?php if (isset($aorder)): ?>
+                <input type="hidden" name="order_num"
+                    value="<?= htmlspecialchars($aorder['fld_order_num'] ?? '') ?>">
+            <?php endif; ?>
+
         </form>
     </div>
 </div>
- 
+
+<!-- Order List -->
 <div class="card shadow-sm">
     <div class="card-body">
-  
+
         <div class="row align-items-center mb-3">
             <div class="col">
                 <h5 class="mb-0">
@@ -76,12 +117,14 @@ ob_start();
                 <small class="text-muted">View and manage all orders</small>
             </div>
             <div class="col-auto">
-                <span class="badge bg-success">Total: 1 items</span>
+                <span class="badge bg-success">
+                    Total: <?= count($orders ?? []) ?> items
+                </span>
             </div>
         </div>
- 
+
         <hr>
- 
+
         <div class="table-responsive">
             <table class="table table-striped table-hover">
                 <thead class="table-dark">
@@ -93,34 +136,64 @@ ob_start();
                         <th>Actions</th>
                     </tr>
                 </thead>
+
                 <tbody>
-                    <tr>
-                        <td>O001</td>
-                        <td>2026-10-03</td>
-                        <td>Jane Smith</td>
-                        <td>Alice Johnson</td>
-                        <td>
-                            <a href="orderdetails.php" class="btn btn-sm btn-info text-white" title="Order details">
-                                <i class="bi bi-list"></i>
-                            </a>
-                            <a href="invoice.php" class="btn btn-sm btn-success" title="View invoice">
-                                <i class="bi bi-receipt"></i>
-                            </a>
-                            <a href="#" class="btn btn-sm btn-warning" title="Edit">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-                            <a href="#" class="btn btn-sm btn-danger" title="Delete">
-                                <i class="bi bi-trash"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    <tr><td colspan="5" class="text-center">No orders found</td></tr>
+                    <?php if (!empty($orders)): ?>
+                        <?php foreach ($orders as $order): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($order['fld_order_num']) ?></td>
+
+                                <td><?= htmlspecialchars($order['fld_order_date']) ?></td>
+
+                                <td><?= htmlspecialchars($order['fld_staff_name'] ?? $order['fld_staff_num']) ?></td>
+
+                                <td><?= htmlspecialchars($order['fld_customer_name'] ?? $order['fld_customer_num']) ?></td>
+
+                                <td>
+                                    <!-- Order Details -->
+                                    <a href="<?= BASE_URL ?>orderdetailcontroller/index/<?= htmlspecialchars($order['fld_order_num']) ?>"
+                                        class="btn btn-sm btn-info text-white"
+                                        title="Order details">
+                                        <i class="bi bi-list"></i>
+                                    </a>
+
+                                    <!-- Invoice -->                     
+                                    <a href="<?= BASE_URL ?>ordercontroller/invoice/<?= htmlspecialchars($order['fld_order_num']) ?>"
+                                        class="btn btn-sm btn-success"
+                                        title="View invoice">
+                                        <i class="bi bi-receipt"></i>
+                                    </a>
+
+                                    <!-- Edit -->
+                                    <a href="<?= BASE_URL ?>ordercontroller/edit/<?= htmlspecialchars($order['fld_order_num']) ?>"
+                                        class="btn btn-sm btn-warning"
+                                        title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+
+                                    <!-- Delete -->
+                                    <a href="<?= BASE_URL ?>ordercontroller/delete/<?= htmlspecialchars($order['fld_order_num']) ?>"
+                                        class="btn btn-sm btn-danger"
+                                        title="Delete"
+                                        onclick="return confirm('Are you sure to delete this order?');">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="5" class="text-center">
+                                No orders found
+                            </td>
+                        </tr>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
- 
+
 <?php
 $content = ob_get_clean();
 require_once 'layout.php';

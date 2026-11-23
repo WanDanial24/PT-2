@@ -58,6 +58,23 @@ class OrderController extends Controller {
         $this->orderModel->delete($id);
         $this->index();
     }
+
+    public function invoice($id) {
+        $order = $this->orderModel->readById($id);
+
+        if (!$order) {
+            http_response_code(404);
+            exit("Order not found");
+        }
+
+        $detailModel = $this->model("orderdetailmodel");
+        $details = $detailModel->readByOrder($id);
+
+        $this->view("invoice", [
+            "order" => $order,
+            "details" => $details
+        ]);
+    }
 }
  
 ?>
